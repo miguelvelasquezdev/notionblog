@@ -7,6 +7,8 @@ import Head from 'next/head'
 import { api } from '../utils/api'
 
 import '../styles/globals.css'
+import '../styles/dropdown-menu.css'
+
 import '../styles/toggle.css'
 import Layout from './layout'
 
