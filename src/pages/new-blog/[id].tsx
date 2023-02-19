@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { GetStaticPropsContext } from 'next'
 
 import ToggleComponent from '../../components/Toggle'
@@ -22,9 +22,9 @@ export const defaultBlockStyles = (top: number, left: number) =>
   ])
 
 const NewBlogPage = ({ id }: props) => {
-  const [text, setText] = useState('')
-  const [isSaved, setIsSaved] = useState('')
-  const [showToggle, setShowToggle] = useState(false)
+  const [text, setText] = useState<string>('')
+  const [isSaved, setIsSaved] = useState<string>('')
+  const [showToggle, setShowToggle] = useState<boolean>(false)
   const [currentBlock, setCurrentBlock] = useState<HTMLElement>()
   const [title, setTitle] = useState<string>()
 
@@ -60,12 +60,12 @@ const NewBlogPage = ({ id }: props) => {
     }
   }, [count, currentBlock])
 
-  const showToggleGroup = async (e: any) => {
+  const showToggleGroup = async (e: MouseEvent | KeyboardEvent) => {
     await handleContent(e)
     displayToolbar(e)
   }
 
-  const displayToolbar = (e: any) => {
+  const displayToolbar = (e: MouseEvent | KeyboardEvent) => {
     const s = window.getSelection()
 
     if (toggleGroupRef.current) {
@@ -81,11 +81,14 @@ const NewBlogPage = ({ id }: props) => {
         if (top && left) {
           defaultBlockStyles(top, left).forEach((value, key) => {
             if (toggleGroupRef?.current) {
-              ;(toggleGroupRef.current.style as any)[key] = value
+              toggleGroupRef.current.style[key as unknown as number] = value
             }
           })
-          setCurrentBlock(e.target)
-          setShowToggle(true)
+          const target = e?.target as HTMLElement
+          if (target) {
+            setCurrentBlock(target)
+            setShowToggle(true)
+          }
         }
       } else {
         clear()
@@ -94,32 +97,36 @@ const NewBlogPage = ({ id }: props) => {
     }
   }
 
-  const handleContent = async (e: any) => {
-    setText(e.target.innerHTML)
+  const handleContent = async (e: MouseEvent | KeyboardEvent) => {
+    const target = e?.target as HTMLElement
+    if (target) {
+      setText(target.innerHTML)
+    }
   }
 
   const isEnterKey = (e: KeyboardEvent) => {
     return e?.key === 'Enter'
   }
 
-  const createNewBlock = (e: any) => {
+  const createNewBlock = (e: KeyboardEvent) => {
+    const target = e?.target as HTMLElement
     if (isEnterKey(e)) {
       if (e.shiftKey) {
         return
       }
 
       createSimpleBlock(e)
-    } else if (!e.target.innerText.length && e.key === 'Backspace') {
-      const previousSibling = e.target.previousSibling
+    } else if (!target.innerText.length && e.key === 'Backspace') {
+      const previousSibling = target.previousSibling as HTMLElement
       previousSibling.focus()
       pageRef.current?.removeChild(e.target as Node)
     }
 
     if (e.key === 'ArrowDown') {
-      const nextSibling = e?.target?.nextSibling
+      const nextSibling = target?.nextSibling as HTMLElement
       handleArrowEvents(nextSibling)
     } else if (e.key === 'ArrowUp') {
-      const previousSibling = e?.target?.previousSibling
+      const previousSibling = target?.previousSibling as HTMLElement
       handleArrowEvents(previousSibling)
     }
   }
@@ -145,7 +152,8 @@ const NewBlogPage = ({ id }: props) => {
     }
   }
 
-  const createSimpleBlock = (e?: any) => {
+  const createSimpleBlock = (e?: KeyboardEvent) => {
+    const target = e?.target as HTMLElement | undefined
     const block = document.createElement('p')
     block.className = paragraphClassname
     block.contentEditable = 'true'
@@ -164,7 +172,12 @@ const NewBlogPage = ({ id }: props) => {
     if (!e) {
       pageRef.current?.appendChild(block)
     } else {
-      e?.target?.parentNode?.insertBefore(block, e?.target?.nextSibling)
+      if (typeof target?.nextSibling) {
+        target?.parentNode?.insertBefore(
+          block,
+          target?.nextSibling as HTMLElement,
+        )
+      }
     }
 
     block.focus()
@@ -172,7 +185,7 @@ const NewBlogPage = ({ id }: props) => {
 
   const editBlog = api.blog.editBlog.useMutation()
 
-  const handleTitle = async (e: any) => {
+  const handleTitle = async (e: ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value)
     setTitle(e.target.value)
 
@@ -200,7 +213,7 @@ const NewBlogPage = ({ id }: props) => {
           type="text"
           className="focus:outline-none font-bold text-4xl mb-5 placeholder:text-stone-300 dark:placeholder:text-zinc-700"
           autoFocus
-          onChange={async (e) => await handleTitle(e)}
+          onChange={(e) => handleTitle(e)}
           placeholder="Untitled"
           value={title ?? ''}
         />

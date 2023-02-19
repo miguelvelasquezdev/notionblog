@@ -1,9 +1,7 @@
 import { NextPage } from 'next'
 import { Client } from '@notionhq/client'
 import { Blocks } from '../../types/blocks'
-import blockTypes from '../../constants/block-types'
 import Link from 'next/link'
-import { colorBackgrounds } from '../utils/colorBackgrounds'
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY })
 const blockId = '937cd08c-82ed-47ac-a3fb-17040a2ae255'
@@ -204,7 +202,7 @@ export async function getStaticProps() {
   }
 }
 
-export async function getStaticPaths() {
+export function getStaticPaths() {
   return {
     paths: [],
     fallback: true,

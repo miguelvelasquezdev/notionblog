@@ -1,17 +1,14 @@
-import { Prisma } from '@prisma/client'
 import { z } from 'zod'
 import { defaultPostSelect } from '../selects/blog'
 
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
 
 export const blogRouter = createTRPCRouter({
-  hello: publicProcedure
-    .input(z.object({ text: z.string() }))
-    .query(({ input }) => {
-      return {
-        greeting: `Hello ${input.text}`,
-      }
-    }),
+  hello: publicProcedure.query(() => {
+    return {
+      greeting: `Hello`,
+    }
+  }),
 
   getAll: protectedProcedure.query(({ ctx }) => {
     console.log(ctx.session?.user?.id, 'ctx.session?.user?.id')
@@ -26,7 +23,7 @@ export const blogRouter = createTRPCRouter({
       select: defaultPostSelect,
     })
   }),
-  createBlog: protectedProcedure.mutation(async ({ ctx, input }) => {
+  createBlog: protectedProcedure.mutation(async ({ ctx }) => {
     if (process.env.DATABASE_ID) {
       const blog = await prisma?.page.create({
         data: {

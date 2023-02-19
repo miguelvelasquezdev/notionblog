@@ -1,13 +1,10 @@
 export type Blocks = {
   object: string
   results: Result[]
-  next_cursor?: any
+  next_cursor?: unknown
   has_more: boolean
   type: string
-  block: Block
 }
-
-type Block = {}
 
 type Result = {
   object: string
@@ -54,7 +51,7 @@ type Heading = {
 }
 
 type Image = {
-  caption: any[]
+  caption: unknown[]
   type: string
   file: File
 }
@@ -74,7 +71,7 @@ type Richtext = {
   text: Text
   annotations: Annotations
   plain_text: string
-  href?: any
+  href?: string
 }
 
 type Annotations = {
@@ -88,11 +85,11 @@ type Annotations = {
 
 type Text = {
   content: string
-  link?: any
+  link?: string
 }
 
 type Bookmark = {
-  caption: any[]
+  caption: unknown[]
   url: string
 }
 

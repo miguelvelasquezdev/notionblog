@@ -11,5 +11,5 @@ export const useStore = create<State>((set) => ({
   count: 0,
   annotation: '',
   increment: () => set((state) => ({ count: state.count + 1 })),
-  clear: () => set((state) => ({ count: 0 })),
+  clear: () => set(() => ({ count: 0 })),
 }))
