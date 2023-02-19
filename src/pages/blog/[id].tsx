@@ -1,6 +1,6 @@
-import { NextPage } from 'next'
+import type { NextPage } from 'next'
 import { Client } from '@notionhq/client'
-import { Blocks } from '../../types/blocks'
+import type { Blocks } from '../../types/blocks'
 import Link from 'next/link'
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY })

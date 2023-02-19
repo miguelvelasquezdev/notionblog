@@ -1,4 +1,4 @@
-import { NextPage } from 'next'
+import type { NextPage } from 'next'
 import Head from 'next/head'
 import { api } from '../../utils/api'
 import { useRouter } from 'next/navigation'
@@ -30,7 +30,11 @@ const MyBlogsPage: NextPage = () => {
         <h2 className="text-3xl font-bold">{myBlogs}</h2>
         <div className="flex flex-row flex-wrap mt-8 gap-4 ">
           <button
-            onClick={() => createBlogAsync()}
+            onClick={() =>
+              void (async () => {
+                await createBlogAsync()
+              })()
+            }
             className="flex flex-col justify-center items-center w-[calc(33.3333%_-_1rem)] h-64 border dark:border-zinc-900 rounded-xl drop-shadow-md bg-stone-50 dark:bg-zinc-800 transition ease-in-out delay-50 hover:drop-shadow-xl"
           >
             <span className="font-bold text-lg text-stone-600 dark:text-gray-300 h-1/5">

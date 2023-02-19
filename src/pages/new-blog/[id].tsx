@@ -1,5 +1,5 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
-import { GetStaticPropsContext } from 'next'
+import { type ChangeEvent, useEffect, useRef, useState } from 'react'
+import type { GetStaticPropsContext } from 'next'
 
 import ToggleComponent from '../../components/Toggle'
 import { useStore } from '../../store/store'
@@ -60,8 +60,8 @@ const NewBlogPage = ({ id }: props) => {
     }
   }, [count, currentBlock])
 
-  const showToggleGroup = async (e: MouseEvent | KeyboardEvent) => {
-    await handleContent(e)
+  const showToggleGroup = (e: MouseEvent | KeyboardEvent) => {
+    handleContent(e)
     displayToolbar(e)
   }
 
@@ -97,7 +97,7 @@ const NewBlogPage = ({ id }: props) => {
     }
   }
 
-  const handleContent = async (e: MouseEvent | KeyboardEvent) => {
+  const handleContent = (e: MouseEvent | KeyboardEvent) => {
     const target = e?.target as HTMLElement
     if (target) {
       setText(target.innerHTML)
@@ -157,10 +157,10 @@ const NewBlogPage = ({ id }: props) => {
     const block = document.createElement('p')
     block.className = paragraphClassname
     block.contentEditable = 'true'
-    block.onmouseup = async (ev) => await showToggleGroup(ev)
-    block.onkeyup = async (ev) => {
+    block.onmouseup = (ev) => showToggleGroup(ev)
+    block.onkeyup = (ev) => {
       console.log(pageRef.current?.children, 'hey')
-      await showToggleGroup(ev)
+      showToggleGroup(ev)
       createNewBlock(ev)
     }
     block.addEventListener('keydown', (ev) => {
@@ -191,7 +191,7 @@ const NewBlogPage = ({ id }: props) => {
 
     if (id) {
       try {
-        const works = await editBlog.mutateAsync({
+        await editBlog.mutateAsync({
           id,
           pageName: e.target.value,
         })
@@ -224,9 +224,7 @@ const NewBlogPage = ({ id }: props) => {
   )
 }
 
-export async function getStaticProps(
-  context: GetStaticPropsContext<{ id: string }>,
-) {
+export function getStaticProps(context: GetStaticPropsContext<{ id: string }>) {
   return {
     props: {
       id: context.params?.id,
