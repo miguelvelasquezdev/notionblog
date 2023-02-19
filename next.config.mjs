@@ -17,5 +17,6 @@ const config = {
   images: {
     domains: ['lh3.googleusercontent.com'],
   },
+  staticPageGenerationTimeout: 100
 };
 export default config;
