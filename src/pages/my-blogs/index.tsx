@@ -40,7 +40,7 @@ const MyBlogsPage: NextPage = () => {
               </span>
             </div>
           </button>
-          {pages.data?.map((page) => (
+          {pages.data?.map((page: any) => (
             <Link
               key={page.id}
               href={`/new-blog/${page.id}`}

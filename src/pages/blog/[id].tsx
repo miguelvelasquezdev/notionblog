@@ -26,8 +26,11 @@ const Blog: NextPage<{ data: Blocks }> = ({ data }) => {
                     } p-4 rounded-md flex gap-3`}
                   >
                     <p>{result.callout.icon.emoji}</p>
-                    {result.callout.rich_text.map((text) => (
-                      <p className=" text-zinc-700 dark:text-white/80">
+                    {result.callout.rich_text.map((text, key) => (
+                      <p
+                        key={key}
+                        className=" text-zinc-700 dark:text-white/80"
+                      >
                         {text.plain_text}
                       </p>
                     ))}
@@ -83,21 +86,21 @@ const Blog: NextPage<{ data: Blocks }> = ({ data }) => {
             case 'heading_1': {
               return (
                 <h1 className="text-3xl font-semibold">
-                  {result.heading_1?.rich_text?.map((text) => {
+                  {result.heading_1?.rich_text?.map((text, key) => {
                     if (text.annotations.bold) {
-                      return <strong>{text.plain_text}</strong>
+                      return <strong key={key}>{text.plain_text}</strong>
                     }
                     if (text.annotations.italic) {
-                      return <em>{text.plain_text}</em>
+                      return <em key={key}>{text.plain_text}</em>
                     }
                     if (text.annotations.strikethrough) {
-                      return <del>{text.plain_text}</del>
+                      return <del key={key}>{text.plain_text}</del>
                     }
                     if (text.annotations.underline) {
-                      return <u>{text.plain_text}</u>
+                      return <u key={key}>{text.plain_text}</u>
                     }
                     if (text.annotations.code) {
-                      return <code>{text.plain_text}</code>
+                      return <code key={key}>{text.plain_text}</code>
                     }
                     return text.plain_text
                   })}
@@ -107,21 +110,21 @@ const Blog: NextPage<{ data: Blocks }> = ({ data }) => {
             case 'heading_2': {
               return (
                 <h1 className="text-2xl font-semibold">
-                  {result.heading_2?.rich_text?.map((text) => {
+                  {result.heading_2?.rich_text?.map((text, key) => {
                     if (text.annotations.bold) {
-                      return <strong>{text.plain_text}</strong>
+                      return <strong key={key}>{text.plain_text}</strong>
                     }
                     if (text.annotations.italic) {
-                      return <em>{text.plain_text}</em>
+                      return <em key={key}>{text.plain_text}</em>
                     }
                     if (text.annotations.strikethrough) {
-                      return <del>{text.plain_text}</del>
+                      return <del key={key}>{text.plain_text}</del>
                     }
                     if (text.annotations.underline) {
-                      return <u>{text.plain_text}</u>
+                      return <u key={key}>{text.plain_text}</u>
                     }
                     if (text.annotations.code) {
-                      return <code>{text.plain_text}</code>
+                      return <code key={key}>{text.plain_text}</code>
                     }
                     return text.plain_text
                   })}
@@ -131,21 +134,21 @@ const Blog: NextPage<{ data: Blocks }> = ({ data }) => {
             case 'heading_3': {
               return (
                 <h1 className="text-xl font-semibold">
-                  {result.heading_3?.rich_text?.map((text) => {
+                  {result.heading_3?.rich_text?.map((text, key) => {
                     if (text.annotations.bold) {
-                      return <strong>{text.plain_text}</strong>
+                      return <strong key={key}>{text.plain_text}</strong>
                     }
                     if (text.annotations.italic) {
-                      return <em>{text.plain_text}</em>
+                      return <em key={key}>{text.plain_text}</em>
                     }
                     if (text.annotations.strikethrough) {
-                      return <del>{text.plain_text}</del>
+                      return <del key={key}>{text.plain_text}</del>
                     }
                     if (text.annotations.underline) {
-                      return <u>{text.plain_text}</u>
+                      return <u key={key}>{text.plain_text}</u>
                     }
                     if (text.annotations.code) {
-                      return <code>{text.plain_text}</code>
+                      return <code key={key}>{text.plain_text}</code>
                     }
 
                     return text.plain_text
@@ -158,19 +161,19 @@ const Blog: NextPage<{ data: Blocks }> = ({ data }) => {
                 <li className="ml-4">
                   {result.bulleted_list_item?.rich_text.map((item) => {
                     if (item.annotations.bold) {
-                      return <strong>{item.plain_text}</strong>
+                      return <strong key={key}>{item.plain_text}</strong>
                     }
                     if (item.annotations.italic) {
-                      return <em>{item.plain_text}</em>
+                      return <em key={key}>{item.plain_text}</em>
                     }
                     if (item.annotations.strikethrough) {
-                      return <del>{item.plain_text}</del>
+                      return <del key={key}>{item.plain_text}</del>
                     }
                     if (item.annotations.underline) {
-                      return <u>{item.plain_text}</u>
+                      return <u key={key}>{item.plain_text}</u>
                     }
                     if (item.annotations.code) {
-                      return <code>{item.plain_text}</code>
+                      return <code key={key}>{item.plain_text}</code>
                     }
 
                     return item.plain_text
