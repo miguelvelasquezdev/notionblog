@@ -49,6 +49,7 @@ const NewBlogPage = ({ id }: props) => {
 
   useEffect(() => {
     createSimpleBlock()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -213,7 +214,11 @@ const NewBlogPage = ({ id }: props) => {
           type="text"
           className="focus:outline-none font-bold text-4xl mb-5 placeholder:text-stone-300 dark:placeholder:text-zinc-700"
           autoFocus
-          onChange={(e) => handleTitle(e)}
+          onChange={(e) =>
+            void (async () => {
+              await handleTitle(e)
+            })()
+          }
           placeholder="Untitled"
           value={title ?? ''}
         />
