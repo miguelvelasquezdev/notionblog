@@ -23,7 +23,8 @@ export const serverSchema = z.object({
   DISCORD_CLIENT_SECRET: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
-  NOTION_API_KEY: z.string()
+  NOTION_API_KEY: z.string(),
+  DATABASE_ID: z.string(),
 });
 
 /**
@@ -40,7 +41,8 @@ export const serverEnv = {
   DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-  NOTION_API_KEY: process.env.NOTION_API_KEY
+  NOTION_API_KEY: process.env.NOTION_API_KEY,
+  DATABASE_ID: process.env.DATABASE_ID,
 };
 
 /**

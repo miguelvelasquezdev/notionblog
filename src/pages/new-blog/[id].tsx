@@ -1,45 +1,51 @@
-import { NextPage } from 'next'
 import { useEffect, useRef, useState } from 'react'
+import { GetStaticPropsContext } from 'next'
+
 import ToggleComponent from '../../components/Toggle'
 import { useStore } from '../../store/store'
+import { api } from '../../utils/api'
+import { prisma } from '../../server/db'
 
 type props = {
-  blockMap: any
+  id: string
 }
 
-type State = {
-  count: number
-  increment: () => void
-}
+export const preventKeys = ['ArrowUp', 'ArrowDown']
+export const paragraphClassname =
+  'focus:outline-none placeholder:text-stone-300 dark:placeholder:text-zinc-500 bg-none focus:bg-transparent dark:focus:bg-transparent rounded hover:bg-zinc-50 dark:hover:bg-zinc-900 px-2 m-px'
 
-const preventKeys = ['ArrowUp', 'ArrowDown']
-
-const paragraphClassname =
-  'focus:outline-none placeholder:text-stone-300 dark:placeholder:text-zinc-500 bg-none focus:bg-transparent dark:focus:bg-transparent rounded hover:bg-zinc-50 dark:hover:bg-zinc-900 px-2 py-1 m-px'
-
-const defaultBlockStyles = (top: number, left: number) =>
+export const defaultBlockStyles = (top: number, left: number) =>
   new Map([
     ['display', 'inline'],
     ['top', `${top}px`],
     ['left', `${left}px`],
   ])
 
-const NewBlogPage: NextPage<props> = ({ blockMap }) => {
+const NewBlogPage = ({ id }: props) => {
   const [text, setText] = useState('')
   const [isSaved, setIsSaved] = useState('')
   const [showToggle, setShowToggle] = useState(false)
   const [currentBlock, setCurrentBlock] = useState<HTMLElement>()
+  const [title, setTitle] = useState<string>()
 
   const toggleGroupRef = useRef<HTMLDivElement>(null)
   const pageRef = useRef<HTMLDivElement>(null)
+
+  const { data } = api.blog.byId.useQuery({ id })
 
   const { count, clear } = useStore((state) => state)
 
   useEffect(() => {
     setIsSaved('🥱')
     const timeOutId = setTimeout(() => setIsSaved('💾'), 500)
-    return () => clearTimeout(timeOutId)
+    return () => {
+      clearTimeout(timeOutId)
+    }
   }, [text])
+
+  useEffect(() => {
+    setTitle(data?.properties?.pageName?.title[0]?.text?.content)
+  }, [data])
 
   useEffect(() => {
     createSimpleBlock()
@@ -54,8 +60,8 @@ const NewBlogPage: NextPage<props> = ({ blockMap }) => {
     }
   }, [count, currentBlock])
 
-  const showToggleGroup = (e: any) => {
-    handleContent(e)
+  const showToggleGroup = async (e: any) => {
+    await handleContent(e)
     displayToolbar(e)
   }
 
@@ -69,7 +75,7 @@ const NewBlogPage: NextPage<props> = ({ blockMap }) => {
         const range = s?.getRangeAt(0)
         const position = range?.getBoundingClientRect()
 
-        const top = position?.y ? position.y - 40 : 0
+        const top = position?.y ? position.y - 40 + window.pageYOffset : 0
         const left = position?.x ?? 0
 
         if (top && left) {
@@ -88,7 +94,7 @@ const NewBlogPage: NextPage<props> = ({ blockMap }) => {
     }
   }
 
-  const handleContent = (e: any) => {
+  const handleContent = async (e: any) => {
     setText(e.target.innerHTML)
   }
 
@@ -139,13 +145,14 @@ const NewBlogPage: NextPage<props> = ({ blockMap }) => {
     }
   }
 
-  const createSimpleBlock = (e?: KeyboardEvent) => {
+  const createSimpleBlock = (e?: any) => {
     const block = document.createElement('p')
     block.className = paragraphClassname
     block.contentEditable = 'true'
-    block.onmouseup = (ev) => showToggleGroup(ev)
-    block.onkeyup = (ev) => {
-      showToggleGroup(ev)
+    block.onmouseup = async (ev) => await showToggleGroup(ev)
+    block.onkeyup = async (ev) => {
+      console.log(pageRef.current?.children, 'hey')
+      await showToggleGroup(ev)
       createNewBlock(ev)
     }
     block.addEventListener('keydown', (ev) => {
@@ -157,13 +164,28 @@ const NewBlogPage: NextPage<props> = ({ blockMap }) => {
     if (!e) {
       pageRef.current?.appendChild(block)
     } else {
-      ;(e?.target as any)?.parentNode?.insertBefore(
-        block,
-        (e as any)?.nextSibling,
-      )
+      e?.target?.parentNode?.insertBefore(block, e?.target?.nextSibling)
     }
 
     block.focus()
+  }
+
+  const editBlog = api.blog.editBlog.useMutation()
+
+  const handleTitle = async (e: any) => {
+    setText(e.target.value)
+    setTitle(e.target.value)
+
+    if (id) {
+      try {
+        const works = await editBlog.mutateAsync({
+          id,
+          pageName: e.target.value,
+        })
+      } catch (err) {
+        console.error(err)
+      }
+    }
   }
 
   return (
@@ -171,20 +193,49 @@ const NewBlogPage: NextPage<props> = ({ blockMap }) => {
       <div ref={toggleGroupRef} className="absolute">
         {showToggle && <ToggleComponent />}
       </div>
-
-      <div className="flex flex-col px-24 py-12 w-5/6" ref={pageRef}>
+      <div className="flex flex-col px-24 py-12 w-5/6">
         <span className="text-md self-end py-5">{isSaved}</span>
+
         <input
           type="text"
           className="focus:outline-none font-bold text-4xl mb-5 placeholder:text-stone-300 dark:placeholder:text-zinc-700"
           autoFocus
-          onChange={(e) => setText(e.target.value)}
+          onChange={async (e) => await handleTitle(e)}
           placeholder="Untitled"
+          value={title ?? ''}
         />
-        {/* <p className="text-xl">{count}</p> */}
+
+        <div ref={pageRef}></div>
       </div>
     </div>
   )
+}
+
+export async function getStaticProps(
+  context: GetStaticPropsContext<{ id: string }>,
+) {
+  return {
+    props: {
+      id: context.params?.id,
+    },
+  }
+}
+
+export async function getStaticPaths() {
+  const pages = await prisma.page.findMany({
+    select: {
+      id: true,
+    },
+  })
+
+  return {
+    paths: pages.map((page) => ({
+      params: {
+        id: page.id,
+      },
+    })),
+    fallback: false,
+  }
 }
 
 export default NewBlogPage
