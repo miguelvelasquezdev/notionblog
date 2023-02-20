@@ -10,11 +10,11 @@ type props = {
   id: string
 }
 
-export const preventKeys = ['ArrowUp', 'ArrowDown']
-export const paragraphClassname =
+const preventKeys = ['ArrowUp', 'ArrowDown']
+const paragraphClassname =
   'focus:outline-none placeholder:text-stone-300 dark:placeholder:text-zinc-500 bg-none focus:bg-transparent dark:focus:bg-transparent rounded hover:bg-zinc-50 dark:hover:bg-zinc-900 px-2 m-px'
 
-export const defaultBlockStyles = (top: number, left: number) =>
+const defaultBlockStyles = (top: number, left: number) =>
   new Map([
     ['display', 'inline'],
     ['top', `${top}px`],
@@ -229,7 +229,7 @@ const NewBlogPage = ({ id }: props) => {
   )
 }
 
-export function getStaticProps(context: GetStaticPropsContext<{ id: string }>) {
+function getStaticProps(context: GetStaticPropsContext<{ id: string }>) {
   return {
     props: {
       id: context.params?.id,
@@ -237,7 +237,7 @@ export function getStaticProps(context: GetStaticPropsContext<{ id: string }>) {
   }
 }
 
-export async function getStaticPaths() {
+async function getStaticPaths() {
   const pages = await prisma.page.findMany({
     select: {
       id: true,
