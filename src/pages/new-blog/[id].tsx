@@ -160,7 +160,6 @@ const NewBlogPage = ({ id }: props) => {
     block.contentEditable = 'true'
     block.onmouseup = (ev) => showToggleGroup(ev)
     block.onkeyup = (ev) => {
-      console.log(pageRef.current?.children, 'hey')
       showToggleGroup(ev)
       createNewBlock(ev)
     }
@@ -229,7 +228,7 @@ const NewBlogPage = ({ id }: props) => {
   )
 }
 
-function getStaticProps(context: GetStaticPropsContext<{ id: string }>) {
+export function getStaticProps(context: GetStaticPropsContext<{ id: string }>) {
   return {
     props: {
       id: context.params?.id,
@@ -237,7 +236,7 @@ function getStaticProps(context: GetStaticPropsContext<{ id: string }>) {
   }
 }
 
-async function getStaticPaths() {
+export async function getStaticPaths() {
   const pages = await prisma.page.findMany({
     select: {
       id: true,

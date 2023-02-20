@@ -1,20 +1,20 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-import GoogleProvider from "next-auth/providers/google";
+import NextAuth, { type NextAuthOptions } from 'next-auth'
+import DiscordProvider from 'next-auth/providers/discord'
+import GoogleProvider from 'next-auth/providers/google'
 // Prisma adapter for NextAuth, optional and can be removed
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { PrismaAdapter } from '@next-auth/prisma-adapter'
 
-import { env } from "../../../env/server.mjs";
-import { prisma } from "../../../server/db";
+import { env } from '../../../env/server.mjs'
+import { prisma } from '../../../server/db'
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
   callbacks: {
     session({ session, user }) {
       if (session.user) {
-        session.user.id = user.id;
+        session.user.id = user.id
       }
-      return session;
+      return session
     },
   },
   // Configure one or more authentication providers
@@ -38,6 +38,6 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
-};
+}
 
-export default NextAuth(authOptions);
+export default NextAuth(authOptions)

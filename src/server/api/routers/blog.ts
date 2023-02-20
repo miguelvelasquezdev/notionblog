@@ -11,7 +11,6 @@ export const blogRouter = createTRPCRouter({
   }),
 
   getAll: protectedProcedure.query(({ ctx }) => {
-    console.log(ctx.session?.user?.id, 'ctx.session?.user?.id')
     return ctx.prisma.page.findMany({
       where: {
         user: {
