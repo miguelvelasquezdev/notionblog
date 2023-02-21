@@ -20,7 +20,22 @@ export const blogRouter = createTRPCRouter({
           },
         },
       },
-      select: defaultPostSelect,
+      select: {
+        id: true,
+        properties: {
+          select: {
+            pageName: {
+              select: {
+                title: {
+                  select: {
+                    plain_text: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     })
   }),
   createBlog: protectedProcedure.mutation(async ({ ctx }) => {

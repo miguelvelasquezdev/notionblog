@@ -1,15 +1,15 @@
-import type { NextPage } from 'next'
+import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
-import { api } from '../../utils/api'
+import { api, RouterOutputs } from '../../utils/api'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
 const myBlogs = 'My Blogs'
 
 const MyBlogsPage: NextPage = () => {
+  const pages = api.blog.getAll.useQuery()?.data
   const router = useRouter()
   const createBlog = api.blog.createBlog.useMutation()
-  const pages = api.blog.getAll.useQuery()
   const createBlogAsync = async () => {
     try {
       const blogId = (await createBlog.mutateAsync())?.id
@@ -46,7 +46,7 @@ const MyBlogsPage: NextPage = () => {
               </span>
             </div>
           </button>
-          {pages?.data?.map((page) => (
+          {pages?.map((page) => (
             <Link
               key={page.id}
               href={`/new-blog/${page.id}`}

@@ -1,5 +1,5 @@
 import { type ChangeEvent, useEffect, useRef, useState } from 'react'
-import type { GetStaticPropsContext } from 'next'
+import type { GetServerSideProps, GetStaticPropsContext } from 'next'
 
 import ToggleComponent from '../../components/Toggle'
 import { useStore } from '../../store/store'
@@ -7,7 +7,7 @@ import { api } from '../../utils/api'
 import { prisma } from '../../server/db'
 
 type props = {
-  id: string
+  pageId: string
 }
 
 const preventKeys = ['ArrowUp', 'ArrowDown']
@@ -21,7 +21,7 @@ const defaultBlockStyles = (top: number, left: number) =>
     ['left', `${left}px`],
   ])
 
-const NewBlogPage = ({ id }: props) => {
+const NewBlogPage = ({ pageId }: props) => {
   const [text, setText] = useState<string>('')
   const [isSaved, setIsSaved] = useState<string>('')
   const [showToggle, setShowToggle] = useState<boolean>(false)
@@ -31,7 +31,7 @@ const NewBlogPage = ({ id }: props) => {
   const toggleGroupRef = useRef<HTMLDivElement>(null)
   const pageRef = useRef<HTMLDivElement>(null)
 
-  const { data } = api.blog.byId.useQuery({ id })
+  const { data } = api.blog.byId.useQuery({ id: pageId })
 
   const { count, clear } = useStore((state) => state)
 
@@ -189,10 +189,10 @@ const NewBlogPage = ({ id }: props) => {
     setText(e.target.value)
     setTitle(e.target.value)
 
-    if (id) {
+    if (pageId) {
       try {
         await editBlog.mutateAsync({
-          id,
+          id: pageId,
           pageName: e.target.value,
         })
       } catch (err) {
@@ -228,28 +228,25 @@ const NewBlogPage = ({ id }: props) => {
   )
 }
 
-export function getStaticProps(context: GetStaticPropsContext<{ id: string }>) {
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { id } = context.params || {}
+  const { id: pageId } =
+    (await prisma.page.findUnique({
+      where: {
+        id: id as string,
+      },
+    })) || {}
+
+  if (!pageId) {
+    return {
+      notFound: true,
+    }
+  }
+
   return {
     props: {
-      id: context.params?.id,
+      pageId,
     },
-  }
-}
-
-export async function getStaticPaths() {
-  const pages = await prisma.page.findMany({
-    select: {
-      id: true,
-    },
-  })
-
-  return {
-    paths: pages.map((page) => ({
-      params: {
-        id: page.id,
-      },
-    })),
-    fallback: false,
   }
 }
 
