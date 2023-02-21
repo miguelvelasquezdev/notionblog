@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { defaultPostSelect } from '../selects/blog'
 
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
+import { prisma } from '../../db'
 
 export const blogRouter = createTRPCRouter({
   hello: publicProcedure.query(() => {
@@ -10,8 +11,8 @@ export const blogRouter = createTRPCRouter({
     }
   }),
 
-  getAll: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.page.findMany({
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    return await prisma.page.findMany({
       where: {
         user: {
           id: {
@@ -24,7 +25,7 @@ export const blogRouter = createTRPCRouter({
   }),
   createBlog: protectedProcedure.mutation(async ({ ctx }) => {
     if (process.env.DATABASE_ID) {
-      const blog = await prisma?.page.create({
+      const blog = await prisma.page.create({
         data: {
           user: { connect: { id: ctx.session?.user?.id } },
           parent: {
@@ -69,7 +70,7 @@ export const blogRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input }) => {
-      const blog = await prisma?.page.findUnique({
+      const blog = await prisma.page.findUnique({
         where: {
           id: input.id,
         },
@@ -88,7 +89,7 @@ export const blogRouter = createTRPCRouter({
 
       const id = blog?.properties?.pageName?.title[0]?.id
 
-      const blogEdited = prisma?.page.update({
+      const blogEdited = await prisma?.page.update({
         where: {
           id: input.id,
         },
@@ -127,8 +128,8 @@ export const blogRouter = createTRPCRouter({
         id: z.string(),
       }),
     )
-    .query(({ ctx, input }) => {
-      return ctx.prisma.page.findUnique({
+    .query(async ({ input }) => {
+      return await prisma.page.findUnique({
         where: {
           id: input.id,
         },
