@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client/edge'
 
 export const defaultPostSelect = Prisma.validator<Prisma.PageSelect>()({
   id: true,
