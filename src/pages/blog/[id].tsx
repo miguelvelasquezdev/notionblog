@@ -1,10 +1,6 @@
 import type { NextPage } from 'next'
-import { Client } from '@notionhq/client'
 import type { Blocks } from '../../types/blocks'
 import Link from 'next/link'
-
-const notion = new Client({ auth: process.env.NOTION_API_KEY })
-const blockId = '937cd08c-82ed-47ac-a3fb-17040a2ae255'
 
 const Blog: NextPage<{ data: Blocks }> = ({ data }) => {
   return (

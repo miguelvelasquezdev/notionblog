@@ -1,6 +1,6 @@
-import type { GetServerSideProps, NextPage } from 'next'
+import type { NextPage } from 'next'
 import Head from 'next/head'
-import { api, RouterOutputs } from '../../utils/api'
+import { api } from '../../utils/api'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
