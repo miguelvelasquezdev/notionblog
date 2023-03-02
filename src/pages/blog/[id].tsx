@@ -189,24 +189,4 @@ const Blog: NextPage<{ data: Blocks }> = ({ data }) => {
   )
 }
 
-async function getStaticProps() {
-  const response = await notion.blocks.children.list({
-    block_id: blockId,
-    page_size: 50,
-  })
-  return {
-    props: {
-      data: response,
-    },
-    revalidate: 10,
-  }
-}
-
-function getStaticPaths() {
-  return {
-    paths: [],
-    fallback: true,
-  }
-}
-
 export default Blog

@@ -1,5 +1,5 @@
 import { type ChangeEvent, useEffect, useRef, useState } from 'react'
-import type { GetServerSideProps, GetStaticPropsContext } from 'next'
+import type { GetServerSideProps } from 'next'
 
 import ToggleComponent from '../../components/Toggle'
 import { useStore } from '../../store/store'
