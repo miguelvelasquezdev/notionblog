@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { defaultPostSelect } from '../selects/blog'
 
-import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
+import { createTRPCRouter, publicProcedure } from '../trpc'
 import { prisma } from '../../db'
 
 export const blogRouter = createTRPCRouter({
@@ -11,38 +11,13 @@ export const blogRouter = createTRPCRouter({
     }
   }),
 
-  getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await prisma.page.findMany({
-      where: {
-        user: {
-          id: {
-            equals: ctx.session?.user?.id,
-          },
-        },
-      },
-      select: {
-        id: true,
-        properties: {
-          select: {
-            pageName: {
-              select: {
-                title: {
-                  select: {
-                    plain_text: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    })
+  getAll: publicProcedure.query(async () => {
+    return await prisma.page.findMany({ select: defaultPostSelect })
   }),
-  createBlog: protectedProcedure.mutation(async ({ ctx }) => {
+  createBlog: publicProcedure.mutation(async () => {
     if (process.env.DATABASE_ID) {
       const blog = await prisma.page.create({
         data: {
-          user: { connect: { id: ctx.session?.user?.id } },
           parent: {
             create: {
               type: 'database_id',
@@ -77,7 +52,7 @@ export const blogRouter = createTRPCRouter({
       return blog
     }
   }),
-  editBlog: protectedProcedure
+  editBlog: publicProcedure
     .input(
       z.object({
         id: z.string(),
@@ -137,7 +112,7 @@ export const blogRouter = createTRPCRouter({
 
       return blogEdited
     }),
-  byId: protectedProcedure
+  byId: publicProcedure
     .input(
       z.object({
         id: z.string(),
@@ -151,7 +126,7 @@ export const blogRouter = createTRPCRouter({
         select: defaultPostSelect,
       })
     }),
-  getSecretMessage: protectedProcedure.query(() => {
+  getSecretMessage: publicProcedure.query(() => {
     return 'you can now see this secret message!'
   }),
 })

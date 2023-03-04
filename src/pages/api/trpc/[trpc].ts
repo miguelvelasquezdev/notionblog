@@ -1,4 +1,6 @@
 import { createNextApiHandler } from '@trpc/server/adapters/next'
+import { fetchRequestHandler } from '@trpc/server/adapters/fetch'
+import { NextRequest, NextResponse } from 'next/server.js'
 
 import { env } from '../../../env/server.mjs'
 import { createTRPCContext } from '../../../server/api/trpc'
@@ -8,16 +10,11 @@ export const config = {
   runtime: 'edge',
 }
 
-// export API handler
-export default createNextApiHandler({
-  router: appRouter,
-  createContext: createTRPCContext,
-  onError:
-    env.NODE_ENV === 'development'
-      ? ({ path, error }) => {
-          console.error(
-            `❌ tRPC failed on ${path ?? '<no-path>'}: ${error.message}`,
-          )
-        }
-      : undefined,
-})
+export default async function handler(req: NextRequest) {
+  return fetchRequestHandler({
+    endpoint: '/api/trpc',
+    router: appRouter,
+    req,
+    createContext: createTRPCContext,
+  })
+}

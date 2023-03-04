@@ -1,11 +1,8 @@
-import { useSession, signIn } from 'next-auth/react'
 import { useTheme } from 'next-themes'
 import Image from 'next/image'
 import Link from 'next/link'
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { data: sessionData } = useSession()
-
   const { resolvedTheme, setTheme } = useTheme()
 
   return (
@@ -35,7 +32,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               API Docs
             </Link>
           </div>
-          {!sessionData ? (
+          {/* {!sessionData ? (
             <button
               className="font-medium"
               onClick={() => void signIn('google')}
@@ -67,7 +64,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 />
               </div>
             )
-          )}
+          )} */}
         </div>
       </header>
       <main>{children}</main>

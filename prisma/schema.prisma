@@ -1,250 +1,239 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider          = "postgresql"
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url               = env("DATABASE_URL")
-    shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 model Page {
-    id               String        @id @default(cuid())
-    created_time     DateTime      @default(now())
-    last_edited_time DateTime      @updatedAt()
-    userId           String?
-    user             User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
-    object           String?       @default("page")
-    archived         Boolean?      @default(false)
-    url              String?       @unique @default(cuid())
-    icon             Icon?
-    created_by       CreatedBy?
-    last_edited_by   LastEditedBy?
-    cover            Cover?
-    properties       Properties?
-    parent           Parent?
+  id               String        @id @default(cuid())
+  created_time     DateTime      @default(now())
+  last_edited_time DateTime      @updatedAt
+  object           String?       @default("page")
+  archived         Boolean?      @default(false)
+  url              String?       @unique @default(cuid())
+  icon             Icon?
+  created_by       CreatedBy?
+  last_edited_by   LastEditedBy?
+  cover            Cover?
+  properties       Properties?
+  parent           Parent?
 }
 
 model LastEditedBy {
-    id     String @id @default(cuid())
-    object String
-    page   Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
-    pageId String @unique
+  id     String @id @default(cuid())
+  object String
+  pageId String @unique
+  page   Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
 }
 
 model Properties {
-    id         String      @id @default(cuid())
-    authorName AuthorName?
-    pageName   PageName?
-    page       Page        @relation(fields: [pageId], references: [id], onDelete: Cascade)
-    pageId     String      @unique
-    authorId   AuthorId?
+  id         String      @id @default(cuid())
+  pageId     String      @unique
+  authorName AuthorName?
+  pageName   PageName?
+  page       Page        @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  authorId   AuthorId?
 }
 
 model PageName {
-    id           String     @id @default(cuid())
-    type         String
-    title        Title[]
-    properties   Properties @relation(fields: [propertiesId], references: [id], onDelete: Cascade)
-    propertiesId String     @unique
+  id           String     @id @default(cuid())
+  type         String
+  propertiesId String     @unique
+  title        Title[]
+  properties   Properties @relation(fields: [propertiesId], references: [id], onDelete: Cascade)
 }
 
 model Title {
-    id          String            @id @default(cuid())
-    type        String
-    text        TitleText?
-    annotations TitleAnnotations?
-    plain_text  String
-    href        String
-    pageName    PageName?         @relation(fields: [pageNameId], references: [id], onDelete: Cascade)
-    pageNameId  String?
+  id          String            @id @default(cuid())
+  type        String
+  plain_text  String
+  href        String
+  pageNameId  String?
+  text        TitleText?
+  annotations TitleAnnotations?
+  pageName    PageName?         @relation(fields: [pageNameId], references: [id], onDelete: Cascade)
 }
 
 model TitleAnnotations {
-    id            String  @id @default(cuid())
-    bold          Boolean
-    italic        Boolean
-    strikethrough Boolean
-    underline     Boolean
-    code          Boolean
-    color         String
-    title         Title   @relation(fields: [titleId], references: [id], onDelete: Cascade)
-    titleId       String  @unique
+  id            String  @id @default(cuid())
+  bold          Boolean
+  italic        Boolean
+  strikethrough Boolean
+  underline     Boolean
+  code          Boolean
+  color         String
+  titleId       String  @unique
+  title         Title   @relation(fields: [titleId], references: [id], onDelete: Cascade)
 }
 
 model AuthorIdAnnotations {
-    id                 String           @id @default(cuid())
-    bold               Boolean
-    italic             Boolean
-    strikethrough      Boolean
-    underline          Boolean
-    code               Boolean
-    color              String
-    authorIdRichText   AuthorIdRichText @relation(fields: [authorIdRichTextId], references: [id], onDelete: Cascade)
-    authorIdRichTextId String           @unique
+  id                 String           @id @default(cuid())
+  bold               Boolean
+  italic             Boolean
+  strikethrough      Boolean
+  underline          Boolean
+  code               Boolean
+  color              String
+  authorIdRichTextId String           @unique
+  authorIdRichText   AuthorIdRichText @relation(fields: [authorIdRichTextId], references: [id], onDelete: Cascade)
 }
 
 model AuthorNameAnnotations {
-    id                   String             @id @default(cuid())
-    bold                 Boolean
-    italic               Boolean
-    strikethrough        Boolean
-    underline            Boolean
-    code                 Boolean
-    color                String
-    authorNameRichText   AuthorNameRichText @relation(fields: [authorNameRichTextId], references: [id], onDelete: Cascade)
-    authorNameRichTextId String             @unique
+  id                   String             @id @default(cuid())
+  bold                 Boolean
+  italic               Boolean
+  strikethrough        Boolean
+  underline            Boolean
+  code                 Boolean
+  color                String
+  authorNameRichTextId String             @unique
+  authorNameRichText   AuthorNameRichText @relation(fields: [authorNameRichTextId], references: [id], onDelete: Cascade)
 }
 
 model TitleText {
-    id      String @id @default(cuid())
-    content String
-    link    String
-    title   Title  @relation(fields: [titleId], references: [id], onDelete: Cascade)
-    titleId String @unique
+  id      String @id @default(cuid())
+  content String
+  link    String
+  titleId String @unique
+  title   Title  @relation(fields: [titleId], references: [id], onDelete: Cascade)
 }
 
 model AuthorIdText {
-    id                 String           @id @default(cuid())
-    content            String
-    link               String?
-    authorIdRichText   AuthorIdRichText @relation(fields: [authorIdRichTextId], references: [id], onDelete: Cascade)
-    authorIdRichTextId String           @unique
+  id                 String           @id @default(cuid())
+  content            String
+  link               String?
+  authorIdRichTextId String           @unique
+  authorIdRichText   AuthorIdRichText @relation(fields: [authorIdRichTextId], references: [id], onDelete: Cascade)
 }
 
 model AuthorNameText {
-    id                 String             @id @default(cuid())
-    content            String
-    link               String
-    authorIdRichText   AuthorNameRichText @relation(fields: [authorIdRichTextId], references: [id], onDelete: Cascade)
-    authorIdRichTextId String             @unique
+  id                 String             @id @default(cuid())
+  content            String
+  link               String
+  authorIdRichTextId String             @unique
+  authorIdRichText   AuthorNameRichText @relation(fields: [authorIdRichTextId], references: [id], onDelete: Cascade)
 }
 
 model AuthorName {
-    id           String               @id @default(cuid())
-    type         String
-    rich_text    AuthorNameRichText[]
-    properties   Properties           @relation(fields: [propertiesId], references: [id], onDelete: Cascade)
-    propertiesId String               @unique
+  id           String               @id @default(cuid())
+  type         String
+  propertiesId String               @unique
+  rich_text    AuthorNameRichText[]
+  properties   Properties           @relation(fields: [propertiesId], references: [id], onDelete: Cascade)
 }
 
 model AuthorId {
-    id           String             @id @default(cuid())
-    type         String
-    rich_text    AuthorIdRichText[]
-    properties   Properties         @relation(fields: [propertiesId], references: [id], onDelete: Cascade)
-    propertiesId String             @unique
+  id           String             @id @default(cuid())
+  type         String
+  propertiesId String             @unique
+  rich_text    AuthorIdRichText[]
+  properties   Properties         @relation(fields: [propertiesId], references: [id], onDelete: Cascade)
 }
 
 model AuthorIdRichText {
-    id          String               @id @default(cuid())
-    type        String
-    text        AuthorIdText?
-    annotations AuthorIdAnnotations?
-    plain_text  String
-    href        String
-    authorId    AuthorId?            @relation(fields: [authorIdId], references: [id], onDelete: Cascade)
-    authorIdId  String?              @unique
+  id          String               @id @default(cuid())
+  type        String
+  plain_text  String
+  href        String
+  authorIdId  String?              @unique
+  text        AuthorIdText?
+  annotations AuthorIdAnnotations?
+  authorId    AuthorId?            @relation(fields: [authorIdId], references: [id], onDelete: Cascade)
 }
 
 model AuthorNameRichText {
-    id           String                 @id @default(cuid())
-    type         String
-    text         AuthorNameText?
-    annotations  AuthorNameAnnotations?
-    plain_text   String
-    href         String
-    authorName   AuthorName             @relation(fields: [authorNameId], references: [id], onDelete: Cascade)
-    authorNameId String                 @unique
+  id           String                 @id @default(cuid())
+  type         String
+  plain_text   String
+  href         String
+  authorNameId String                 @unique
+  text         AuthorNameText?
+  annotations  AuthorNameAnnotations?
+  authorName   AuthorName             @relation(fields: [authorNameId], references: [id], onDelete: Cascade)
 }
 
 model Parent {
-    id          String @id @default(cuid())
-    type        String
-    database_id String
-    page        Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
-    pageId      String @unique
+  id          String @id @default(cuid())
+  type        String
+  database_id String
+  pageId      String @unique
+  page        Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
 }
 
 model Icon {
-    id     String  @id @default(cuid())
-    type   String
-    emoji  String?
-    page   Page    @relation(fields: [pageId], references: [id], onDelete: Cascade)
-    pageId String  @unique
+  id     String  @id @default(cuid())
+  type   String
+  emoji  String?
+  pageId String  @unique
+  page   Page    @relation(fields: [pageId], references: [id], onDelete: Cascade)
 }
 
 model Cover {
-    id       String    @id @default(cuid())
-    type     String
-    page     Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
-    pageId   String    @unique
-    external External?
+  id       String    @id @default(cuid())
+  type     String
+  pageId   String    @unique
+  page     Page      @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  external External?
 }
 
 model External {
-    id      String  @id @default(cuid())
-    url     String?
-    Cover   Cover   @relation(fields: [coverId], references: [id], onDelete: Cascade)
-    coverId String  @unique
+  id      String  @id @default(cuid())
+  url     String?
+  coverId String  @unique
+  Cover   Cover   @relation(fields: [coverId], references: [id], onDelete: Cascade)
 }
 
 model CreatedBy {
-    id     String @id @default(cuid())
-    object String
-    page   Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
-    pageId String @unique
+  id     String @id @default(cuid())
+  object String
+  pageId String @unique
+  page   Page   @relation(fields: [pageId], references: [id], onDelete: Cascade)
 }
 
-// Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? // @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    pages         Page[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }

@@ -1,10 +1,9 @@
 import { type ChangeEvent, useEffect, useRef, useState } from 'react'
-import type { GetServerSideProps } from 'next'
 
 import ToggleComponent from '../../components/Toggle'
 import { useStore } from '../../store/store'
 import { api } from '../../utils/api'
-import { prisma } from '../../server/db'
+import { useRouter } from 'next/router'
 
 type props = {
   pageId: string
@@ -21,7 +20,7 @@ const defaultBlockStyles = (top: number, left: number) =>
     ['left', `${left}px`],
   ])
 
-const NewBlogPage = ({ pageId }: props) => {
+const NewBlogPage = () => {
   const [text, setText] = useState<string>('')
   const [isSaved, setIsSaved] = useState<string>('')
   const [showToggle, setShowToggle] = useState<boolean>(false)
@@ -31,7 +30,10 @@ const NewBlogPage = ({ pageId }: props) => {
   const toggleGroupRef = useRef<HTMLDivElement>(null)
   const pageRef = useRef<HTMLDivElement>(null)
 
-  const { data } = api.blog.byId.useQuery({ id: pageId })
+  const router = useRouter()
+  const id = router.query.id as string
+
+  const blog = api.blog.byId.useQuery({ id: id })
 
   const { count, clear } = useStore((state) => state)
 
@@ -44,8 +46,8 @@ const NewBlogPage = ({ pageId }: props) => {
   }, [text])
 
   useEffect(() => {
-    setTitle(data?.properties?.pageName?.title[0]?.text?.content)
-  }, [data])
+    setTitle(blog?.data?.properties?.pageName?.title[0]?.text?.content)
+  }, [blog?.data])
 
   useEffect(() => {
     createSimpleBlock()
@@ -189,10 +191,10 @@ const NewBlogPage = ({ pageId }: props) => {
     setText(e.target.value)
     setTitle(e.target.value)
 
-    if (pageId) {
+    if (id) {
       try {
         await editBlog.mutateAsync({
-          id: pageId,
+          id,
           pageName: e.target.value,
         })
       } catch (err) {
@@ -200,6 +202,19 @@ const NewBlogPage = ({ pageId }: props) => {
       }
     }
   }
+
+  if (!blog?.data && blog.isLoading) {
+    return (
+      <p className="h-screen flex justify-center items-center">Loading...</p>
+    )
+  }
+
+  if (!blog?.data)
+    return (
+      <p className="h-screen flex justify-center items-center">
+        This blog does not exist...
+      </p>
+    )
 
   return (
     <div className="flex justify-center">
@@ -226,28 +241,6 @@ const NewBlogPage = ({ pageId }: props) => {
       </div>
     </div>
   )
-}
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { id } = context.params || {}
-  const { id: pageId } =
-    (await prisma.page.findUnique({
-      where: {
-        id: id as string,
-      },
-    })) || {}
-
-  if (!pageId) {
-    return {
-      notFound: true,
-    }
-  }
-
-  return {
-    props: {
-      pageId,
-    },
-  }
 }
 
 export default NewBlogPage
