@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "postinstall && next build",
+    "build": "prisma generate --data-proxy && next build",
     "dev": "next dev",
     "postinstall": "prisma generate --data-proxy",
     "lint": "next lint",
