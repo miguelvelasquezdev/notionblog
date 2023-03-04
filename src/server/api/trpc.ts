@@ -44,7 +44,7 @@ const createInnerTRPCContext = () => {
  * process every request that goes through your tRPC endpoint
  * @link https://trpc.io/docs/context
  */
-export const createTRPCContext = async () => {
+export const createTRPCContext = () => {
   // Get the session from the server using the unstable_getServerSession wrapper function
   // const session = await getServerAuthSession({ req, res });
 
@@ -57,7 +57,7 @@ export const createTRPCContext = async () => {
  * This is where the trpc api is initialized, connecting the context and
  * transformer
  */
-import { initTRPC, TRPCError } from '@trpc/server'
+import { initTRPC } from '@trpc/server'
 import superjson from 'superjson'
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -93,17 +93,17 @@ export const publicProcedure = t.procedure
  * Reusable middleware that enforces users are logged in before running the
  * procedure
  */
-const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  // if (!ctx.session || !ctx.session.user) {
-  //   throw new TRPCError({ code: 'UNAUTHORIZED' })
-  // }
-  return next({
-    ctx: {
-      // infers the `session` as non-nullable
-      // session: { ...ctx.session, user: ctx.session.user },
-    },
-  })
-})
+// const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+//   // if (!ctx.session || !ctx.session.user) {
+//   //   throw new TRPCError({ code: 'UNAUTHORIZED' })
+//   // }
+//   return next({
+//     ctx: {
+//       // infers the `session` as non-nullable
+//       // session: { ...ctx.session, user: ctx.session.user },
+//     },
+//   })
+// })
 
 /**
  * Protected (authed) procedure

@@ -1,9 +1,8 @@
 import { useTheme } from 'next-themes'
-import Image from 'next/image'
 import Link from 'next/link'
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { resolvedTheme, setTheme } = useTheme()
+  // const { resolvedTheme, setTheme } = useTheme()
 
   return (
     <div>

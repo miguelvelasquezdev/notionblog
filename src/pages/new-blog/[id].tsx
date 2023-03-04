@@ -5,10 +5,6 @@ import { useStore } from '../../store/store'
 import { api } from '../../utils/api'
 import { useRouter } from 'next/router'
 
-type props = {
-  pageId: string
-}
-
 const preventKeys = ['ArrowUp', 'ArrowDown']
 const paragraphClassname =
   'focus:outline-none placeholder:text-stone-300 dark:placeholder:text-zinc-500 bg-none focus:bg-transparent dark:focus:bg-transparent rounded hover:bg-zinc-50 dark:hover:bg-zinc-900 px-2 m-px'
